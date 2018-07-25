@@ -11,27 +11,34 @@ public class GMRF_bin {
 		double count;
 		double sum;
 		double prob;
+		double position;
 
 		public Feedback() {
 			count = 0;
 			sum = 0;
+			this.calcposition();
 		}
 		
 		public Feedback(double count, double sum) {
 			this.count = count;
 			this.sum = sum;
-			this.calcprob();
+			this.calcposition();
 		}
 		
 		public void addfeedback(int fb) {
 			count++;
 			sum += fb;
-			this.calcprob();
+			this.calcposition();
 		}
 		
-		void calcprob() {
-			double r = (sum+0.07)/(count+1);
-			prob = 1.0/(1.0+Math.exp(-r));
+		void calcposition() {
+			double prob = (sum+0.07)/(count+1);
+			//prob = 1.0/(1.0+Math.exp(-position));
+			position = Math.log(prob/(1.0-prob));
+		}
+		
+		double positioncount() {
+			return position*count;
 		}
 	}
 	
@@ -65,7 +72,7 @@ public class GMRF_bin {
 			}
 			
 			count = count+fb_list[idx].count*25;
-			sum = sum+fb_list[idx].sum*25;
+			sum = sum+fb_list[idx].positioncount()*25;
 			
 			average = sum/count;
 			std = 1.0/Math.sqrt(count);
@@ -428,21 +435,21 @@ public class GMRF_bin {
 		}
 		
 		int trial = -1;
-		double ts_largest = -10000;
+		double ts_smallest = 10000;
 		double average = 0;
 		double std = 0;
 		for (Iterator<Integer> it=ValidIndex.iterator(); it.hasNext(); ) {
 			int index = it.next();
 			double ts = sampler_list[index].sample;
-			if (ts>ts_largest) {
+			if (ts<ts_smallest) {
 				trial = index;
-				ts_largest = ts;
+				ts_smallest = ts;
 				average = sampler_list[index].average;
 				std = sampler_list[index].std;
 			}
 		}
 		
-		System.out.print("" + average + ", " + std + ", " + ts_largest + " === ");
+		System.out.print("" + average + ", " + std + ", " + ts_smallest + " === ");
 		return trial;
 	}
 	
