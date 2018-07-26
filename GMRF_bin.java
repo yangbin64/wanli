@@ -32,7 +32,7 @@ public class GMRF_bin {
 		}
 		
 		void calcposition() {
-			double prob = (sum+0.07)/(count+1);
+			prob = (sum+0.02)/(count+1);
 			//prob = 1.0/(1.0+Math.exp(-position));
 			position = Math.log(prob/(1.0-prob));
 		}
@@ -71,14 +71,14 @@ public class GMRF_bin {
 				sum = sum + sampler_list[i].sample*4;
 			}
 			
-			count = count+fb_list[idx].count*25;
-			sum = sum+fb_list[idx].positioncount()*25;
+			count = count+fb_list[idx].count*9;
+			sum = sum+fb_list[idx].positioncount()*9;
 			
 			average = sum/count;
 			std = 1.0/Math.sqrt(count);
 			
 			NormalDistribution nd = new NormalDistribution();
-			sample = average + nd.sample()*std;
+			sample = average + nd.sample()*std*2;
 		}
 	}
 	
@@ -528,7 +528,7 @@ public class GMRF_bin {
 			System.out.println(e);
 		}
 		for (int n=0; n<1000; n++) {
-			if (n==600) {
+			if (n%100==0) {
 				System.out.println(n);
 			}
 			int trial = TS();
